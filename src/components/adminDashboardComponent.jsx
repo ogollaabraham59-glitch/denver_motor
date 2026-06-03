@@ -1,130 +1,160 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const AdminDashboardComponent = () => {
+
     const navigate = useNavigate();
+
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState("");
+    const [error, setError] = useState("");
 
     const user = JSON.parse(localStorage.getItem("user"));
 
+    // 🔐 ADMIN AUTH CHECK
     useEffect(() => {
-        // Not logged in
         if (!user) {
             navigate("/signin");
             return;
         }
 
-        // Logged in but not admin
         if (user.role !== "admin") {
             alert("Access Denied. Admins Only.");
             navigate("/");
+            return;
         }
-    }, [navigate, user]);
 
-    const logout = () => {
-        localStorage.removeItem("user");
-        navigate("/signin");
+        loadProducts();
+    }, []);
+
+    // 📦 GET ALL PRODUCTS
+    const loadProducts = async () => {
+        setLoading("Loading products...");
+        setError("");
+
+        try {
+            const res = await axios.get(
+                "https://abraham59.alwaysdata.net/api/get_products"
+            );
+
+            setProducts(res.data);
+            setLoading("");
+
+        } catch (err) {
+            setLoading("");
+            setError("Failed to load products");
+        }
     };
 
-    if (!user || user.role !== "admin") {
-        return null;
-    }
+    // 🗑 DELETE PRODUCT
+    const deleteProduct = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) {
+            return;
+        }
+
+        try {
+            await axios.delete(
+                `https://abraham59.alwaysdata.net/api/delete_product/${id}`
+            );
+
+            // refresh list after delete
+            setProducts(products.filter((item) => item.id !== id));
+
+        } catch (err) {
+            alert("Failed to delete product");
+        }
+    };
+
+    if (!user || user.role !== "admin") return null;
 
     return (
-        <div className="container-fluid bg-light min-vh-100 py-5">
-            <div className="container">
+        <div className="container py-5">
 
-                <div className="card shadow-lg border-0 mb-4">
-                    <div className="card-body p-4">
+            {/* HEADER */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
 
-                        <div className="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h2 className="fw-bold text-primary">
-                                    Admin Dashboard
-                                </h2>
+                <div>
+                    <h2 className="fw-bold text-primary">
+                        Admin Dashboard
+                    </h2>
+
+                    <p className="text-muted">
+                        Welcome, {user.username}
+                    </p>
+                </div>
+
+                <Link to="/addproduct" className="btn btn-success">
+                    + Add Vehicle
+                </Link>
+
+            </div>
+
+            {/* STATUS */}
+            {loading && (
+                <p className="text-info">{loading}</p>
+            )}
+
+            {error && (
+                <p className="text-danger">{error}</p>
+            )}
+
+            {/* PRODUCTS */}
+            <div className="row">
+
+                {products.length === 0 && (
+                    <div className="text-center text-danger">
+                        🚫 No products available in inventory
+                    </div>
+                )}
+
+                {products.map((item) => (
+                    <div className="col-md-4 mb-4" key={item.id}>
+
+                        <div className="card shadow h-100">
+
+                            <img
+                                src={
+                                    "https://abraham59.alwaysdata.net/static/images/" +
+                                    item.product_image
+                                }
+                                className="card-img-top"
+                                style={{ height: "200px", objectFit: "cover" }}
+                                alt={item.product_name}
+                            />
+
+                            <div className="card-body">
+
+                                <h5>{item.product_name}</h5>
 
                                 <p className="text-muted">
-                                    Welcome {user.username}
+                                    {item.product_description?.substring(0, 60)}...
                                 </p>
+
+                                <h6 className="text-success">
+                                    Ksh {item.product_cost}
+                                </h6>
+
                             </div>
 
-                            <button
-                                className="btn btn-danger"
-                                onClick={logout}
-                            >
-                                Logout
-                            </button>
-                        </div>
+                            <div className="card-footer bg-white border-0">
 
-                    </div>
-                </div>
-
-                <div className="row g-4">
-
-                    <div className="col-md-4">
-                        <div className="card shadow border-0 h-100">
-                            <div className="card-body text-center">
-
-                                <h4>Add Product</h4>
-
-                                <p>
-                                    Add new vehicles to your inventory.
-                                </p>
-
-                                <Link
-                                    to="/addproduct"
-                                    className="btn btn-success w-100"
+                                <button
+                                    className="btn btn-danger w-100"
+                                    onClick={() => deleteProduct(item.id)}
                                 >
-                                    Add Vehicle
-                                </Link>
+                                    Delete Product
+                                </button>
 
                             </div>
+
                         </div>
+
                     </div>
+                ))}
 
-                    <div className="col-md-4">
-                        <div className="card shadow border-0 h-100">
-                            <div className="card-body text-center">
-
-                                <h4>Manage Products</h4>
-
-                                <p>
-                                    View, edit and delete products.
-                                </p>
-
-                                <Link
-                                    to="/manageproducts"
-                                    className="btn btn-primary w-100"
-                                >
-                                    Manage Vehicles
-                                </Link>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-md-4">
-                        <div className="card shadow border-0 h-100">
-                            <div className="card-body text-center">
-
-                                <h4>Orders</h4>
-
-                                <p>
-                                    View customer orders.
-                                </p>
-
-                                <Link
-                                    to="/orders"
-                                    className="btn btn-warning w-100"
-                                >
-                                    View Orders
-                                </Link>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
             </div>
+
         </div>
     );
 };

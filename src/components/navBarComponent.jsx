@@ -1,121 +1,123 @@
-import { Link } from "react-router-dom";
 import React from "react";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Link, useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 
-function NavBarComponent() {
+const NavBarComponent = () => {
+    const navigate = useNavigate();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const logout = () => {
+        localStorage.removeItem("user");
+        navigate("/signin");
+    };
 
     return (
-
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
 
             <div className="container-fluid">
 
-                {/* LOGO */}
-                <Link
-                    className="navbar-brand fw-bold"
-                    to="/"
-                >
-                    SARAFINA DRESSINGS
+                {/* BRAND */}
+                <Link className="navbar-brand fw-bold text-warning" to="/">
+                    🚗 DENVER MOTORS
                 </Link>
 
-                {/* TOGGLER BUTTON */}
+                {/* TOGGLER (mobile) */}
                 <button
                     className="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
+                    data-bs-target="#mainNavbar"
                 >
-
                     <span className="navbar-toggler-icon"></span>
-
                 </button>
 
-                {/* COLLAPSIBLE NAVBAR */}
-                <div
-                    className="collapse navbar-collapse"
-                    id="navbarNav"
-                >
+                {/* NAV ITEMS */}
+                <div className="collapse navbar-collapse" id="mainNavbar">
 
-                    <ul className="navbar-nav ms-auto">
+                    <ul className="navbar-nav ms-auto align-items-lg-center">
 
                         <li className="nav-item">
-
-                            <Link
-                                className="nav-link text-white"
-                                to="/"
-                            >
+                            <Link className="nav-link" to="/">
                                 Home
                             </Link>
-
                         </li>
 
                         <li className="nav-item">
-
-                            <Link
-                                className="nav-link text-white"
-                                to="/home"
-                            >
-                                Products
+                            <Link className="nav-link" to="/cars">
+                                Cars
                             </Link>
-
                         </li>
 
                         <li className="nav-item">
-
-                            <Link
-                                className="nav-link text-white"
-                                to="/signup"
-                            >
-                                Sign Up
+                            <Link className="nav-link" to="/search">
+                                Search
                             </Link>
-
                         </li>
 
                         <li className="nav-item">
-
-                            <Link
-                                className="nav-link text-white"
-                                to="/signin"
-                            >
-                                Sign In
+                            <Link className="nav-link" to="/contact">
+                                Contact
                             </Link>
-
                         </li>
 
                         <li className="nav-item">
-
-                            <Link
-                                className="nav-link text-white"
-                                to="/addproduct"
-                            >
-                                Add Product
+                            <Link className="nav-link" to="/about">
+                                About
                             </Link>
-
                         </li>
 
-                        <li className="nav-item">
+                        {/* ADMIN ONLY LINKS */}
+                        {user?.role === "admin" && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-warning" to="/addproduct">
+                                        Add Motors
+                                    </Link>
+                                </li>
 
-                            <Link
-                                className="nav-link text-white"
-                                to="/AboutUs"
-                            >
-                                About Us
-                            </Link>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-warning" to="/admindashboard">
+                                        Admin Dashboard
+                                    </Link>
+                                </li>
+                            </>
+                        )}
 
-                        </li>
+                        {/* AUTH SECTION */}
+                        {!user ? (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-success" to="/signin">
+                                        Sign In
+                                    </Link>
+                                </li>
+
+                                <li className="nav-item">
+                                    <Link className="nav-link text-info" to="/signup">
+                                        Sign Up
+                                    </Link>
+                                </li>
+                            </>
+                        ) : (
+                            <li className="nav-item">
+                                <button
+                                    onClick={logout}
+                                    className="btn btn-danger btn-sm ms-2"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                        )}
 
                     </ul>
 
                 </div>
 
             </div>
-
         </nav>
     );
-}
+};
 
 export default NavBarComponent;

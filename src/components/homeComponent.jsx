@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const HomeComponent = () => {
+
+    const location = useLocation();
+
+    // optional: detect search query from URL
+    const queryParams = new URLSearchParams(location.search);
+    const searchQuery = queryParams.get("q");
+
     return (
         <div className="container-fluid p-0">
 
@@ -9,45 +16,50 @@ const HomeComponent = () => {
                 className="d-flex flex-column justify-content-center align-items-center text-center text-light vh-100"
                 style={{
                     backgroundImage:
-                        "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop')",
+                        "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2070&auto=format&fit=crop')",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                 }}
             >
 
-                {/* MOVING TEXT */}
+                {/* MOVING WELCOME TEXT */}
                 <marquee
                     behavior="scroll"
                     direction="left"
-                    scrollAmount="10"
+                    scrollAmount="12"
                     className="bg-dark p-3 w-100"
                 >
-                    <h3>
-                        🔥 Welcome to Abraham Fashion Store |
-                        Trending Clothes |
-                        Best Shoes |
-                        Wedding Suits |
-                        Official Wear And also great Design 🔥
-                    </h3>
+                    <h4 className="m-0">
+                        🚗 Welcome to Denver Motors |
+                        Quality Cars |
+                        Affordable Prices |
+                        Trusted Dealer in Kenya |
+                        Easy Financing Available 🚗
+                    </h4>
                 </marquee>
 
                 <div className="bg-dark bg-opacity-50 p-5 rounded-4 mt-4">
 
-                    <h1 className="display-3 fw-bold">
-                        Welcome To Our Store
+                    <h1 className="display-4 fw-bold">
+                        Welcome To Denver Motors
                     </h1>
 
                     <p className="lead">
-                        Discover amazing fashion designs and trending outfits at affordable prices.
+                        Find your dream car with confidence — quality, speed & trust.
                     </p>
 
-                    {/* HERO BUTTONS */}
+                    {searchQuery && (
+                        <p className="text-warning">
+                            Searching for: <strong>{searchQuery}</strong>
+                        </p>
+                    )}
+
+                    {/* BUTTONS */}
                     <div className="mt-4">
 
-                        {/* ALL PRODUCTS */}
-                        <Link to="/home">
+                        <Link to="/cars">
                             <button className="btn btn-primary btn-lg mx-2">
-                                View Products
+                                View Cars
                             </button>
                         </Link>
 
@@ -63,122 +75,106 @@ const HomeComponent = () => {
 
             </section>
 
-            {/* TRENDING COLLECTIONS */}
+            {/* FEATURED CARS SECTION */}
             <section className="container py-5">
 
-                <h2 className="text-center mb-5 text-dark fw-bold">
-                    Trending Collections
+                <h2 className="text-center mb-5 fw-bold">
+                    Featured Cars
                 </h2>
 
-                <div className="row">
+                <div className="row g-4">
 
-                    {/* CARD 1 */}
-                    <div className="col-md-4 mb-4">
-
-                        <div className="card shadow-lg border-0 rounded-4 h-100">
+                    {/* CAR 1 */}
+                    <div className="col-md-4">
+                        <div className="card shadow-lg border-0 h-100">
 
                             <img
-                                src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1974&auto=format&fit=crop"
-                                alt="fashion"
+                                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70"
                                 className="card-img-top"
-                                height="350"
-                                style={{ objectFit: "cover" }}
+                                style={{ height: "250px", objectFit: "cover" }}
+                                alt="Toyota"
                             />
 
                             <div className="card-body text-center">
-
-                                <h4 className="fw-bold">
-                                    Modern Fashion
-                                </h4>
-
-                                <p>
-                                    Stylish clothes for all occasions.
+                                <h4>Toyota Land Cruiser</h4>
+                                <p className="text-muted">
+                                    Powerful SUV for all terrains
                                 </p>
 
-                                {/* ALL PRODUCTS */}
-                                <Link to="/home">
+                                <Link to="/cardetails/1">
                                     <button className="btn btn-dark">
-                                        Shop Now
+                                        View More
                                     </button>
                                 </Link>
-
                             </div>
 
                         </div>
-
                     </div>
 
-                    {/* CARD 2 */}
-                    <div className="col-md-4 mb-4">
-
-                        <div className="card shadow-lg border-0 rounded-4 h-100">
+                    {/* CAR 2 */}
+                    <div className="col-md-4">
+                        <div className="card shadow-lg border-0 h-100">
 
                             <img
-                                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1970&auto=format&fit=crop"
-                                alt="shoes"
+                                src="https://images.unsplash.com/photo-1502877338535-766e1452684a"
                                 className="card-img-top"
-                                height="350"
-                                style={{ objectFit: "cover" }}
+                                style={{ height: "250px", objectFit: "cover" }}
+                                alt="BMW"
                             />
 
                             <div className="card-body text-center">
-
-                                <h4 className="fw-bold">
-                                    Trending Shoes
-                                </h4>
-
-                                <p>
-                                    Comfortable and classy shoes collection.
+                                <h4>BMW X5</h4>
+                                <p className="text-muted">
+                                    Luxury and performance combined
                                 </p>
 
-                                {/* SHOES ONLY */}
-                                <Link to="/home?category=shoes">
-                                    <button className="btn btn-primary">
-                                        Explore
+                                <Link to="/cardetails/2">
+                                    <button className="btn btn-dark">
+                                        View More
                                     </button>
                                 </Link>
-
                             </div>
 
                         </div>
-
                     </div>
 
-                    {/* CARD 3 */}
-                    <div className="col-md-4 mb-4">
-
-                        <div className="card shadow-lg border-0 rounded-4 h-100">
+                    {/* CAR 3 */}
+                    <div className="col-md-4">
+                        <div className="card shadow-lg border-0 h-100">
 
                             <img
-                                src="https://images.unsplash.com/photo-1593032465171-8bd3818e8d8d?q=80&w=1974&auto=format&fit=crop"
-                                alt="suits"
+                                src="https://images.unsplash.com/photo-1511910849309-0dffb8781f2a"
                                 className="card-img-top"
-                                height="350"
-                                style={{ objectFit: "cover" }}
+                                style={{ height: "250px", objectFit: "cover" }}
+                                alt="Audi"
                             />
 
                             <div className="card-body text-center">
-
-                                <h4 className="fw-bold">
-                                    Official Suits
-                                </h4>
-
-                                <p>
-                                    Elegant official and wedding suits.
+                                <h4>Audi Q7</h4>
+                                <p className="text-muted">
+                                    Modern luxury SUV
                                 </p>
 
-                                {/* SUITS ONLY */}
-                                <Link to="/home?category=suits">
-                                    <button className="btn btn-success">
-                                        View Collection
+                                <Link to="/cardetails/3">
+                                    <button className="btn btn-dark">
+                                        View More
                                     </button>
                                 </Link>
-
                             </div>
 
                         </div>
-
                     </div>
+
+                </div>
+
+                {/* VIEW ALL CARS BUTTON */}
+                <div className="text-center mt-5">
+
+                    <Link to="/cars">
+                        <button className="btn btn-primary btn-lg">
+                            View All Cars
+                        </button>
+                    </Link>
 
                 </div>
 

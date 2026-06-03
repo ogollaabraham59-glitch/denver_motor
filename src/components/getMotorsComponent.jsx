@@ -1,196 +1,187 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const GetProductComponent = () => {
+const GetCarsComponent = () => {
+    const [cars, setCars] = useState([]);
+    const [loading, setLoading] = useState("");
+    const [error, setError] = useState("");
 
-    let [products, setproducts] = useState([]);
-    let [loading, setLoading] = useState("");
-    let [error, setError] = useState("");
-    let [search_input, setsearch_input] = useState("");
-    let [categoriseItem, setcategorise_item] = useState("");
+    const [search, setSearch] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+    const [minSpeed, setMinSpeed] = useState("");
+
+    const navigate = useNavigate();
 
     const img_url = "https://abraham59.alwaysdata.net/static/images/";
 
-    let navigate = useNavigate();
-    let location = useLocation();
-
-    // GET CATEGORY FROM URL
-    const queryParams = new URLSearchParams(location.search);
-    const categoryFromUrl = queryParams.get("category") || "";
-
-    const getproducts = async () => {
+    // FETCH CARS
+    const getCars = async () => {
+        setLoading("Loading cars...");
         setError("");
-        setLoading("fetching product.please wait...");
 
         try {
             const response = await axios.get(
                 "https://abraham59.alwaysdata.net/api/get_products"
             );
 
-            if (response.status === 200) {
-                setLoading("");
-                setproducts(response.data);
-            }
-
-        } catch (error) {
+            setCars(response.data);
             setLoading("");
-            setError(error.message);
+        } catch (err) {
+            setLoading("");
+            setError("Failed to load cars");
         }
     };
 
     useEffect(() => {
-        getproducts();
+        getCars();
     }, []);
 
-    // FILTER PRODUCTS
-    const filteredProducts = products.filter((product) => {
+    // FILTER LOGIC
+    const filteredCars = cars.filter((car) => {
+        const name = (car.product_name || "").toLowerCase();
 
-        const name = (product.product_name || "").toLowerCase();
-        const category = (product.categorise_Item || "").toLowerCase();
+        const price = Number(car.product_cost || 0);
+        const speed = Number(car.top_speed || 0); // IMPORTANT: backend must include this field
 
-        const search = search_input.toLowerCase();
-        const selectedCategory = categoriseItem.toLowerCase();
-        const urlCategory = categoryFromUrl.toLowerCase();
+        const matchSearch = name.includes(search.toLowerCase());
 
-        return (
-            name.includes(search) &&
-            category.includes(selectedCategory) &&
-            category.includes(urlCategory)
-        );
+        const matchPrice =
+            (!minPrice || price >= Number(minPrice)) &&
+            (!maxPrice || price <= Number(maxPrice));
+
+        const matchSpeed =
+            !minSpeed || speed >= Number(minSpeed);
+
+        return matchSearch && matchPrice && matchSpeed;
     });
 
     return (
-        <div className="row text-center">
+        <div className="container py-4">
 
-            <h3 className="text-center text-dark">
-                PRODUCT FOUND
-            </h3>
+            <h2 className="text-center text-primary mb-4">
+                Available Cars
+            </h2>
 
-            <center className="text-dark">
+            {/* FILTERS */}
+            <div className="row mb-4 g-2">
 
-                <div className="col-md-2 mb-3">
-
-                    {/* SEARCH */}
+                <div className="col-md-3">
                     <input
-                        type="search"
-                        placeholder="search products...."
-                        className="px-4 form-control"
-                        value={search_input}
-                        onChange={(e) =>
-                            setsearch_input(e.currentTarget.value)
-                        }
+                        className="form-control"
+                        placeholder="Search car..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                     />
-
-                    {/* CATEGORY FILTER */}
-                    <select
-                        className="form-control mt-2"
-                        value={categoriseItem}
-                        onChange={(e) =>
-                            setcategorise_item(e.target.value)
-                        }
-                    >
-
-                        <option value="">
-                            All Categories
-                        </option>
-
-                        <option value="shoes">Shoes</option>
-                        <option value="suits">Suits</option>
-                        <option value="dress">Dress</option>
-                        <option value="officials">Officials</option>
-                        <option value="wedding suits">Wedding Suits</option>
-
-                    </select>
-
                 </div>
 
-            </center>
+                <div className="col-md-3">
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Min Price"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                    />
+                </div>
 
-            <h6 className="text-warning">{loading}</h6>
-            <h6 className="text-danger">{error}</h6>
+                <div className="col-md-3">
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Max Price"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                    />
+                </div>
 
-            {/* PRODUCTS */}
-            <div className="row justify-content-center mt-4">
+                <div className="col-md-3">
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Min Speed (km/h)"
+                        value={minSpeed}
+                        onChange={(e) => setMinSpeed(e.target.value)}
+                    />
+                </div>
 
-                {filteredProducts.length === 0 && (
-                    <p className="text-danger">
-                        No products found
-                    </p>
-                )}
+            </div>
 
-                {filteredProducts.map((product) => (
+            {/* STATUS */}
+            {loading && (
+                <p className="text-info text-center">{loading}</p>
+            )}
 
-                    <div className="col-md-3 mb-4" key={product.id}>
+            {error && (
+                <p className="text-danger text-center">{error}</p>
+            )}
 
-                        <div className="card shadow">
+            {/* CAR LIST */}
+            <div className="row">
 
-                            <h5 className="text-primary mt-2">
-                                {product.categorise_Item}
-                            </h5>
+                {filteredCars.map((car) => (
+                    <div className="col-md-4 mb-4" key={car.product_id}>
+
+                        <div className="card shadow border-0 h-100">
 
                             <img
-                                src={img_url + product.product_image}
-                                alt=""
-                                className="product_img mt-3"
+                                src={img_url + car.product_image}
+                                alt={car.product_name}
+                                style={{
+                                    height: "220px",
+                                    objectFit: "cover"
+                                }}
                             />
 
                             <div className="card-body">
 
-                                <h5>{product.product_name}</h5>
+                                <h5 className="text-primary">
+                                    {car.product_name}
+                                </h5>
 
                                 <p className="text-muted">
-                                    {product.product_description}
+                                    {car.product_description?.substring(0, 80)}...
                                 </p>
 
-                                <h4 className="text-warning">
-                                    Ksh {product.product_cost}
-                                </h4>
+                                <h5 className="text-success">
+                                    Ksh {car.product_cost}
+                                </h5>
+
+                                <p>
+                                    🚀 Speed: {car.top_speed || "N/A"} km/h
+                                </p>
+
+                            </div>
+
+                            <div className="card-footer bg-white border-0">
 
                                 <button
-
                                     className="btn btn-dark w-100"
-                                    onClick={() => {
-
-                                        // CHECK IF USER IS LOGGED IN
-                                        const isLoggedIn =
-                                            localStorage.getItem("isLoggedIn");
-
-                                        // IF USER HAS ACCOUNT AND IS LOGGED IN
-                                        if (isLoggedIn === "true") {
-
-                                            // ALLOW PURCHASE
-                                            navigate("/makepayment", {
-                                                state: { product }
-                                            });
-
-                                        } else {
-
-                                            // BLOCK PURCHASE
-                                            alert(
-                                                "You must login first before purchasing an item"
-                                            );
-
-                                            navigate("/signin");
-                                        }
-                                    }}
+                                    onClick={() =>
+                                        navigate(`/cardetails/${car.product_id}`)
+                                    }
                                 >
-                                    Purchase Now
+                                    View Details
                                 </button>
-
 
                             </div>
 
                         </div>
 
                     </div>
-
                 ))}
+
+                {filteredCars.length === 0 && (
+                    <p className="text-danger text-center">
+                        No cars found matching filters
+                    </p>
+                )}
 
             </div>
 
-        </div >
+        </div>
     );
 };
 
-export default GetProductComponent;
+export default GetCarsComponent;

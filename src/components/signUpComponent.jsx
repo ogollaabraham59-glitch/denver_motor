@@ -1,138 +1,176 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUpComponent = () => {
-    let [username, updateUserName] = useState("")
-    let [email, updateEmail] = useState("")
-    let [phone, updatePhone] = useState("")
-    let [password, updatePassword] = useState("")
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [location, setLocation] = useState("");
+    const [password, setPassword] = useState("");
 
-    //loading state variable
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
 
-    let [loading, updateLoading] = useState("")
-    let [success, updateSuccess] = useState("")
-    let [error, updateError] = useState("")
-    //
+    const navigate = useNavigate();
 
-
-
-    let handlesubmit = async (e) => {
-
-        //prevent form from reloading page
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-
-        //alert user loading 
-        updateError("");
-        updateSuccess("");
-        updateLoading("Submiting Data.Pleas wait...")
-
-        //confirm user data
-        console.log(username, email, phone, password)
-        // try send data to server
+        setLoading(true);
+        setError("");
+        setSuccess("");
 
         try {
-            const user_data = new FormData()
-            user_data.append("username", username)
-            user_data.append("email", email)
-            user_data.append("phone", phone)
-            user_data.append("password", password)
+            const payload = {
+                username,
+                email,
+                phone,
+                location,
+                password,
+            };
 
-            //use axios to send data to server
-            const response = await axios.post("https://abraham59.alwaysdata.net/api/signup",
-                user_data);
-            console.log(response);
-            if (response.status === 200) {
+            const response = await axios.post(
+                "https://abraham59.alwaysdata.net/api/signup",
+                payload
+            );
 
-                // save user data to local storage
-                localStorage.setItem("user", JSON.stringify(response.data.user))
+            const data = response.data;
+
+            if (data?.user) {
+                setSuccess(data.message || "Account created successfully!");
+
+                // save user
+                localStorage.setItem("user", JSON.stringify(data.user));
                 localStorage.setItem("isLoggedIn", "true");
 
+                // clear form
+                setUsername("");
+                setEmail("");
+                setPhone("");
+                setLocation("");
+                setPassword("");
 
+                // redirect
+                setTimeout(() => {
+                    navigate("/signin");
+                }, 1200);
 
-                updateSuccess(response.data.message)
-                updateLoading("");
-                updateUserName("");
-                updateEmail("");
-                updatePhone("");
-                updatePassword("");
-
+            } else {
+                setError(data?.message || "Signup failed");
             }
 
-        } catch (error) {
-            console.log(error);
-            updateLoading("");
-            updateError(error.message);
-
+        } catch (err) {
+            setError(
+                err.response?.data?.message ||
+                err.message ||
+                "Server error. Please try again."
+            );
+        } finally {
+            setLoading(false);
         }
-
-
-
-    }
-    localStorage.setItem("isLoggedIn", "true");
-
-
-
-
+    };
 
     return (
-        <div className="row justify-content-center mt-4">
+        <div className="container d-flex justify-content-center align-items-center py-5">
 
-            <div className="col-md-6 card shadow p-4">
-                <h2>signup</h2>
+            <div className="col-md-6 col-lg-5">
 
-                <h5 className="text-warning">{loading}</h5>
-                <h5 className="text-danger">{error}</h5>
-                <h5 className="text-success">{success}</h5>
+                <div className="card shadow-lg border-0 rounded-4">
 
-                <form onSubmit={handlesubmit}>
-                    <input type="text"
-                        className="form-control"
-                        placeholder=" Enter Name"
-                        required
-                        value={username}
-                        onChange={(e) => { updateUserName(e.target.value) }}
-                    />
+                    <div className="card-body p-4">
 
+                        <h2 className="text-center fw-bold mb-4">
+                            Create Account
+                        </h2>
 
-                    <br />
-                    <input type="enter email"
-                        className="form-control"
-                        placeholder=" Enter Email"
-                        required
-                        value={email}
-                        onChange={(e) => { updateEmail(e.target.value) }}
-                    />
+                        {/* STATUS */}
+                        {loading && (
+                            <div className="alert alert-info text-center">
+                                Creating account...
+                            </div>
+                        )}
 
-                    <br />
-                    <input type="enter phone"
-                        className="form-control"
-                        placeholder=" Enter Phone"
-                        required
-                        value={phone}
-                        onChange={(e) => { updatePhone(e.target.value) }}
-                    />
-                    <br />
-                    <input type="password"
-                        className="form-control"
-                        placeholder=" Enter Password"
-                        required
-                        value={password}
-                        onChange={(e) => { updatePassword(e.target.value) }}
-                    />
+                        {error && (
+                            <div className="alert alert-danger">
+                                {error}
+                            </div>
+                        )}
 
-                    <br />
-                    <button className="btn btn-dark">
-                        sign up
-                    </button>
-                    <br />
-                    <Link to="/signin">Already have an account ? signin</Link>
-                </form>
+                        {success && (
+                            <div className="alert alert-success">
+                                {success}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit}>
+
+                            <input
+                                className="form-control mb-3"
+                                placeholder="Username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+
+                            <input
+                                type="email"
+                                className="form-control mb-3"
+                                placeholder="Email Address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+
+                            <input
+                                className="form-control mb-3"
+                                placeholder="Phone Number"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                required
+                            />
+
+                            <input
+                                className="form-control mb-3"
+                                placeholder="Location (e.g Nairobi, Westlands)"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                required
+                            />
+
+                            <input
+                                type="password"
+                                className="form-control mb-3"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+
+                            <button
+                                className="btn btn-dark w-100"
+                                disabled={loading}
+                            >
+                                {loading ? "Signing up..." : "Sign Up"}
+                            </button>
+
+                            <div className="text-center mt-3">
+                                <Link to="/signin">
+                                    Already have an account? Sign In
+                                </Link>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
-    )
-}
+    );
+};
+
 export default SignUpComponent;
