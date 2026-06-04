@@ -20,7 +20,7 @@ const NavBarComponent = () => {
 
                 {/* BRAND */}
                 <Link className="navbar-brand fw-bold text-warning" to="/">
-                    🚗 DENVER MOTORS
+                    DENVER MOTORS AND LOGISTICS
                 </Link>
 
                 {/* TOGGLER (mobile) */}
@@ -45,28 +45,36 @@ const NavBarComponent = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link className="nav-link" to="/cars">
-                                Cars
+                            <Link className="nav-link" to="/GetCars">
+                                GetCars
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/AddProduct">
+                                AddMotors
                             </Link>
                         </li>
 
                         <li className="nav-item">
                             <Link className="nav-link" to="/search">
-                                Search
+                                SEARCH TAB
                             </Link>
                         </li>
 
                         <li className="nav-item">
-                            <Link className="nav-link" to="/contact">
-                                Contact
+                            <Link className="nav-link" to="/ ContactUs">
+                                CONTACTUS
                             </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/ CarDetails">
+                                CarDetails
+                            </Link>
+
                         </li>
 
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/about">
-                                About
-                            </Link>
-                        </li>
+
 
                         {/* ADMIN ONLY LINKS */}
                         {user?.role === "admin" && (

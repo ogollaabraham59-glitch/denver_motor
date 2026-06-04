@@ -30,18 +30,18 @@ const HomeComponent = () => {
                     className="bg-dark p-3 w-100"
                 >
                     <h4 className="m-0">
-                        🚗 Welcome to Denver Motors |
+                        Welcome to Denver Motors  And Logistics|
                         Quality Cars |
                         Affordable Prices |
                         Trusted Dealer in Kenya |
-                        Easy Financing Available 🚗
+                        Easy Financing Available
                     </h4>
                 </marquee>
 
                 <div className="bg-dark bg-opacity-50 p-5 rounded-4 mt-4">
 
                     <h1 className="display-4 fw-bold">
-                        Welcome To Denver Motors
+                        Welcome To Denver Motors And Logistics
                     </h1>
 
                     <p className="lead">

@@ -6,21 +6,15 @@ import NavBarComponent from "./components/navBarComponent";
 import HomeComponent from "./components/homeComponent";
 import SignUpComponent from "./components/signUpComponent";
 import SigninComponent from "./components/signInComponent";
-import ContactUsComponent from "./components/contactUsComponent";
-import SearchComponent from "./components/searchComponent";
-import CarsComponent from "./components/carsComponent";
-import AddProductComponent from "./components/addProductComponent";
-import GetProductComponent from "./components/getProductComponent";
-import footerComponent from "./components/footerComponent";
-import carlistComponent from "./components/carlistComponent";
-import carDetailsComponent from "./components/carDetailsComponent";
-
-import AdminDashboardComponent from "./components/adminDashboardComponent";
-
-
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import AddProductComponent from "./components/addMotorsComponent";
+import CarDetailsComponent from "./components/carDetailcomponent";
+import ContactUsComponent from "./components/contactUsComponent";
+import AdminDashboardComponent from "./components/adminDashboardComponent";
+import CarListComponent from "./components/carListComponent";
+import GetCarsComponent from "./components/getMotorsComponent";
 
 function App() {
   return (
@@ -34,10 +28,11 @@ function App() {
           <Route path="/signin" element={<SigninComponent />} />
           <Route path="/signup" element={<SignUpComponent />} />
           <Route path="/addproduct" element={<AddProductComponent />} />
+          <Route path="/cardetails" element={<CarDetailsComponent />} />
+          <Route path="/contactus" element={<ContactUsComponent />} />
           <Route path="/admindashboard" element={<AdminDashboardComponent />} />
-          <Route path='/carsdetails/:product_id' element={<GetProductComponent />} />
-
-
+          <Route path="/carlists" element={<CarListComponent />} />
+          <Route path="/getcar" element={<GetCarsComponent />} />
 
         </Routes>
       </div>
